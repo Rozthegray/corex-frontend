@@ -1,4 +1,4 @@
-"use client"; // Add this line at the top
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { 
@@ -13,23 +13,19 @@ import {
    FileText,
    LogOut,
    Sparkles
-   // Instagram removed
 } from 'lucide-react';
+import { apiClient } from "@/lib/api-client"; // Added your API Client
 
-// --- ROUTER COMPONENT ---
 // --- ROUTER COMPONENT ---
 export default function App() {
-  // 1. Initialize with a safe default for the server build
   const [currentPath, setCurrentPath] = useState('#/');
 
-  // 2. Read the window object only on the client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentPath(window.location.hash || '#/');
     }
   }, []);
 
-  // 3. Keep your existing hash change listener
   useEffect(() => {
     const onHashChange = () => {
       setCurrentPath(window.location.hash || '#/');
@@ -38,7 +34,6 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // ... rest of your component
   const renderRoute = () => {
     switch (currentPath) {
       case '#/dashboard':
@@ -46,8 +41,7 @@ export default function App() {
       case '#/login':
         return <AuthPage type="login" />;
       case '#/signup':
-      case '#/signup':
-      return <AuthPage type="register" />;
+        return <AuthPage type="register" />;
       case '#/':
       default:
         return <LandingPage />;
@@ -130,10 +124,7 @@ function LandingPage() {
 
         <div className="flex-1 w-full max-w-xl lg:max-w-none relative z-10 mt-10 lg:mt-0">
           <div className="relative aspect-square md:aspect-[4/3] rounded-[2.5rem] bg-gradient-to-tr from-green-50 to-yellow-50 p-4 sm:p-8 shadow-2xl border border-white flex items-center justify-center overflow-visible">
-            {/* Soft inner glow */}
             <div className="absolute inset-0 rounded-[2.5rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.8)]"></div>
-            
-            {/* Robot Image */}
             <img 
               src="White_friendly_robot_standing_2K_20261019171820.jpg" 
               alt="Corex AI Friendly Robot Tutor" 
@@ -152,7 +143,6 @@ function LandingPage() {
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">Bridging the gap between general knowledge and your specific curriculum.</p>
           </div>
           
-          {/* Feature 1: Chat View */}
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="flex-1 space-y-6">
               <h3 className="text-[30px] font-bold text-gray-900 leading-[1.2]">A mission to see more students succeed.</h3>
@@ -196,7 +186,6 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Feature 2: Archive View */}
           <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
             <div className="flex-1 space-y-6">
               <h3 className="text-[30px] font-bold text-gray-900 leading-[1.2]">Your digital academic archive.</h3>
@@ -226,7 +215,6 @@ function LandingPage() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -245,9 +233,7 @@ function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-green-600 hover:text-white transition-colors">
-             
-            </a>
+            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-green-600 hover:text-white transition-colors"></a>
           </div>
         </div>
       </footer>
@@ -259,7 +245,6 @@ function LandingPage() {
 function Dashboard() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="p-6 border-b border-gray-100 flex items-center gap-2 cursor-pointer" onClick={() => window.location.hash = '#/'}>
            <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
@@ -285,7 +270,6 @@ function Dashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col h-full relative">
         <header className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8">
           <h2 className="text-xl font-bold text-gray-800">Welcome back, Scholar</h2>
@@ -296,7 +280,6 @@ function Dashboard() {
 
         <div className="flex-1 p-8 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-8">
-            {/* Search/Ask Box */}
             <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-200 flex items-center focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-500/10 transition-all">
               <div className="pl-4 text-gray-400"><Search size={24}/></div>
               <input 
@@ -309,7 +292,6 @@ function Dashboard() {
               </button>
             </div>
 
-            {/* Quick Stats/Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-3xl p-8 text-white shadow-lg shadow-green-900/20 relative overflow-hidden">
                 <Bot className="absolute -right-4 -bottom-4 w-32 h-32 text-white/10" />
@@ -339,8 +321,46 @@ function Dashboard() {
 
 // --- AUTH PAGES (LOGIN / SIGNUP) ---
 function AuthPage({ type }: { type: 'login' | 'register' }) {
-    const isLogin = type === 'login';
-    // ...
+  const isLogin = type === 'login';
+  
+  // Dynamic State matching your API Request Structure
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [level, setLevel] = useState("HND I");
+  const [pathway, setPathway] = useState("Computer Engineering");
+  
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Form Submission Logic
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!isLogin) {
+        // Register Flow
+        await apiClient.post("/auth/register", { 
+          email, 
+          password,
+          full_name: fullName,
+          level: level,
+          pathway: pathway
+        });
+        window.location.hash = '#/login';
+      } else {
+        // Login Flow 
+        await apiClient.post("/auth/login", { email, password });
+        window.location.hash = '#/dashboard';
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Authentication failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 font-sans selection:bg-green-200 selection:text-green-900" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
@@ -371,42 +391,108 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
             </button>
           </div>
 
-          <div className="relative flex items-center mb-8">
+          <div className="relative flex items-center mb-6">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="flex-shrink-0 mx-4 text-[10px] text-gray-400 uppercase tracking-widest font-bold">or</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
-          <form className="space-y-5" action="#" method="POST" onSubmit={(e) => { e.preventDefault(); window.location.hash = '#/dashboard'; }}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-[10px] font-bold text-red-700">
+                {error}
+              </div>
+            )}
+
             {!isLogin && (
               <div>
                 <label htmlFor="name" className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Full Name</label>
-                <input id="name" name="name" type="text" required className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" placeholder="John Doe" />
+                <input 
+                  id="name" 
+                  type="text" 
+                  required 
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" 
+                  placeholder="e.g. Osemene Chibuzor" 
+                />
+              </div>
+            )}
+
+            {!isLogin && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Level</label>
+                  <select 
+                    value={level} 
+                    onChange={(e) => setLevel(e.target.value)}
+                    className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50 cursor-pointer"
+                  >
+                    <option value="ND I">ND I</option>
+                    <option value="ND II">ND II</option>
+                    <option value="HND I">HND I</option>
+                    <option value="HND II">HND II</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Pathway</label>
+                  <select 
+                    value={pathway} 
+                    onChange={(e) => setPathway(e.target.value)}
+                    className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50 cursor-pointer"
+                  >
+                    <option value="Computer Engineering">General</option>
+                    <option value="Software Systems & Networking">Software</option>
+                    <option value="Computer Hardware & Embedded Systems">Hardware</option>
+                  </select>
+                </div>
               </div>
             )}
 
             <div>
               <label htmlFor="email" className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Email Address</label>
-              <input id="email" name="email" type="email" autoComplete="email" required className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" placeholder="student@yabatech.edu.ng" />
+              <input 
+                id="email" 
+                type="email" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" 
+                placeholder="student@yabatech.edu.ng" 
+              />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">Password</label>
-              <input id="password" name="password" type="password" autoComplete="current-password" required className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" placeholder="••••••••" />
+              <input 
+                id="password" 
+                type="password" 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="appearance-none block w-full px-5 py-4 border border-gray-200 rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-[10px] bg-gray-50/50" 
+                placeholder="••••••••" 
+              />
             </div>
 
             {isLogin && (
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center">
-                  <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
+                  <input id="remember-me" type="checkbox" className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
                   <label htmlFor="remember-me" className="ml-2 block text-[10px] text-gray-700 font-bold uppercase tracking-wider">Remember me</label>
                 </div>
                 <a href="#" className="text-[10px] font-bold text-green-600 hover:text-green-500 uppercase tracking-wider">Forgot your password?</a>
               </div>
             )}
 
-            <button type="submit" className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-green-600/20 text-[10px] font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all hover:-translate-y-0.5 uppercase tracking-widest mt-6">
-              {isLogin ? 'Sign in' : 'Create Account'}
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg shadow-green-600/20 text-[10px] font-bold text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all hover:-translate-y-0.5 uppercase tracking-widest mt-6 disabled:opacity-50"
+            >
+              {loading 
+                ? (isLogin ? 'Signing in...' : 'Creating Account...') 
+                : (isLogin ? 'Sign in' : 'Create Account')}
             </button>
           </form>
           
@@ -420,14 +506,10 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
 
         {/* Right Pane - Visual */}
         <div className="hidden md:flex flex-1 relative bg-[#0a0a0a] overflow-hidden flex-col justify-center p-12 lg:p-20">
-          {/* Noise texture overlay */}
           <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay z-10 pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
-          
-          {/* Grainy Glowing Gradients */}
           <div className="absolute top-[-20%] right-[-20%] w-[120%] h-[120%] bg-gradient-to-bl from-green-500 via-yellow-400 to-transparent rounded-full mix-blend-screen filter blur-[100px] opacity-90 z-0"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[80%] h-[80%] bg-green-700/60 rounded-full mix-blend-screen filter blur-[120px] z-0"></div>
 
-          {/* Text Content */}
           <div className="relative z-20 max-w-md">
             <h2 className="text-[60px] font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
               Think fast, <br /> Build faster.
@@ -440,15 +522,5 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
 
       </div>
     </div>
-  );
-}
-
-// Simple dummy icon for CheckCircle2
-function CheckCircle2({ size = 24, className = "" }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
   );
 }

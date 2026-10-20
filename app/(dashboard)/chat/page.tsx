@@ -25,7 +25,6 @@ export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
   
-  // If the URL is /chat/123-abc, this captures the ID. If it's just /chat, it's undefined.
   const routeSessionId = params?.id ? (Array.isArray(params.id) ? params.id[0] : params.id) : null;
 
   const [activeSessionId, setActiveSessionId] = useState<string | null>(routeSessionId);
@@ -41,7 +40,7 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // --- 1. LOAD CHAT HISTORY IF ID EXISTS IN URL ---
+  // --- 1. LOAD CHAT HISTORY ---
   useEffect(() => {
     const fetchSession = async () => {
       if (!routeSessionId) return;
@@ -53,12 +52,10 @@ export default function ChatPage() {
         });
         if (res.ok) {
           const data = await res.json();
-          // Load old messages into the UI
           setMessages(data.messages.map((msg: any) => ({
             id: msg.id,
             role: msg.role,
             content: msg.content,
-            // If the old message contained an image URL in the DB, we could load it here (requires backend support)
           })));
           if (data.session.course_code) setSelectedCourse(data.session.course_code);
         }
@@ -78,7 +75,7 @@ export default function ChatPage() {
     router.push("/chat");
   };
 
-  // --- 2. THE IMAGE GENERATOR API CALL ---
+  // --- 2. IMAGE GENERATOR API CALL ---
   const generateImageFromPrompt = async (messageId: string, imagePrompt: string) => {
     try {
       const token = Cookies.get("access_token");
@@ -110,12 +107,10 @@ export default function ChatPage() {
     }
   };
 
-  // --- 3. THE PDF DOWNLOADER API CALL ---
+  // --- 3. PDF DOWNLOADER API CALL ---
   const handleDownloadPdf = async (messageContent: string) => {
     try {
       const token = Cookies.get("access_token");
-      
-      // Clean triggers out of the markdown before converting to PDF
       const cleanText = messageContent
         .replace(/\[TRIGGER_IMAGE_GENERATION:.*?\]/g, "")
         .replace(/\[TRIGGER_PDF_GENERATION\]/g, "")
@@ -135,7 +130,6 @@ export default function ChatPage() {
       
       if (!res.ok) throw new Error("PDF generation failed");
       
-      // Convert the binary response into a downloadable file
       const blob = await res.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -173,7 +167,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           message: userMessage.content,
           course_code: selectedCourse || null,
-          session_id: activeSessionId // Pass active session ID so backend continues the thread
+          session_id: activeSessionId 
         }),
       });
 
@@ -200,11 +194,9 @@ export default function ChatPage() {
               try {
                 const parsed = JSON.parse(dataPayload);
                 
-                // If the backend generated a new session ID for a fresh chat, capture it
                 if (parsed.session_id && !newlyCreatedSessionId) {
                   newlyCreatedSessionId = parsed.session_id;
                   setActiveSessionId(newlyCreatedSessionId);
-                  // Silently update the URL so the sidebar knows we are in a saved chat
                   window.history.replaceState(null, "", `/chat/${newlyCreatedSessionId}`);
                 }
 
@@ -232,7 +224,6 @@ export default function ChatPage() {
         }
       }
 
-      // POST-STREAM PROCESSING FOR IMAGES
       if (streamedResponse.includes("[TRIGGER_IMAGE_GENERATION:")) {
         const match = streamedResponse.match(/\[TRIGGER_IMAGE_GENERATION:\s*(.*?)\]/);
         if (match && match[1]) {
@@ -268,11 +259,11 @@ export default function ChatPage() {
         
         {/* DALL-E IMAGE LOADER / VIEWER */}
         {msg.role === "assistant" && hasImageTrigger && (
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+          <div className="mt-4 overflow-hidden rounded-xl border border-green-100 bg-white shadow-sm">
             {msg.isGeneratingMedia ? (
-               <div className="flex flex-col items-center justify-center p-12 text-slate-500">
-                  <Loader2 className="mb-2 h-8 w-8 animate-spin text-blue-500" />
-                  <p className="text-sm font-medium">Corex.AI is generating your illustration...</p>
+               <div className="flex flex-col items-center justify-center p-12 text-green-700">
+                  <Loader2 className="mb-2 h-8 w-8 animate-spin" />
+                  <p className="text-sm font-medium">Corex AI is generating your illustration...</p>
                </div>
             ) : msg.imageUrl ? (
                <div className="relative group">
@@ -281,7 +272,7 @@ export default function ChatPage() {
                    href={msg.imageUrl} 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   className="absolute bottom-4 right-4 bg-slate-900/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-slate-900"
+                   className="absolute bottom-4 right-4 bg-green-900/80 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-green-900"
                  >
                    <Download size={18} />
                  </a>
@@ -292,19 +283,19 @@ export default function ChatPage() {
 
         {/* PDF DOWNLOAD COMPONENT */}
         {msg.role === "assistant" && hasPdfTrigger && (
-           <div className="mt-4 flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+           <div className="mt-4 flex items-center justify-between rounded-lg border border-green-100 bg-white p-4 shadow-sm">
              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-700">
                    <FileText size={20} />
                 </div>
                 <div>
-                   <p className="text-sm font-medium text-slate-900">Research_Report_Draft.pdf</p>
-                   <p className="text-xs text-slate-500">Document generated successfully</p>
+                   <p className="text-sm font-bold text-green-900">Research_Report.pdf</p>
+                   <p className="text-xs text-green-600/80">Document generated successfully</p>
                 </div>
              </div>
              <button 
                 onClick={() => handleDownloadPdf(msg.content)}
-                className="flex items-center gap-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 transition-colors"
              >
                 <Download size={16} /> Download
              </button>
@@ -316,30 +307,36 @@ export default function ChatPage() {
 
   if (isLoadingHistory) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-white">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-slate-50">
+    <div className="relative flex h-[calc(100vh-4rem)] flex-col bg-white overflow-hidden">
+      {/* Background Yabatech Splash Effects */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-green-100/40 blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-yellow-100/30 blur-[100px]" />
+      </div>
+
       {/* Top Header / Scope Filter */}
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3.5 shadow-sm">
+      <header className="relative z-10 flex items-center justify-between border-b border-green-100 bg-white/80 backdrop-blur-md px-6 py-3.5 shadow-sm">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className="text-lg font-semibold text-slate-900">Academic Archive RAG Assistant</h1>
-            <p className="text-xs text-slate-500">Context-grounded retrieval from departmental packs & guides</p>
+            <h1 className="text-lg font-bold text-green-900">Academic Archive RAG Assistant</h1>
+            <p className="text-xs text-green-700/80">Context-grounded retrieval from departmental packs & guides</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-slate-600">Course Scope:</label>
+            <label className="text-xs font-semibold text-green-800">Course Scope:</label>
             <select
               value={selectedCourse}
               onChange={(e) => setSelectedCourse(e.target.value)}
-              className="rounded-md border border-slate-300 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 focus:border-slate-900 focus:outline-none"
+              className="rounded-md border border-green-200 bg-white px-3 py-1.5 text-xs font-medium text-green-900 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600"
             >
               {COURSE_OPTIONS.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -351,7 +348,7 @@ export default function ChatPage() {
           
           <button 
             onClick={handleNewChat}
-            className="flex items-center gap-2 rounded-md bg-white border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex items-center gap-2 rounded-md bg-white border border-green-200 px-3 py-1.5 text-sm font-medium text-green-800 hover:bg-green-50 transition-colors shadow-sm"
           >
             <PlusCircle size={16} /> New Chat
           </button>
@@ -359,16 +356,16 @@ export default function ChatPage() {
       </header>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="mx-auto max-w-3xl space-y-6">
+      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-6">
+        <div className="mx-auto max-w-5xl space-y-6">
           {messages.length === 0 ? (
             <div className="mt-20 flex flex-col items-center text-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 shadow-sm">
-                 <ImageIcon size={32} />
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-100 to-yellow-100 text-green-700 shadow-sm border border-green-50">
+                 <ImageIcon size={36} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Corex AI Multimodal Engine</h3>
-              <p className="mt-2 max-w-md text-sm text-slate-500">
-                Ask questions, generate research reports, or request detailed engineering diagrams. I will generate exactly what you need.
+              <h3 className="text-xl font-extrabold text-green-900">Corex AI Multimodal Engine</h3>
+              <p className="mt-3 max-w-lg text-sm text-green-700/80 leading-relaxed">
+                Ask questions, generate research reports, or request detailed engineering diagrams. I will generate exactly what you need based on the Yabatech archives.
               </p>
             </div>
           ) : (
@@ -378,10 +375,10 @@ export default function ChatPage() {
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-5 py-4 shadow-sm ${
+                  className={`max-w-[85%] rounded-2xl px-6 py-5 shadow-sm ${
                     msg.role === "user"
-                      ? "bg-slate-900 text-white rounded-tr-sm"
-                      : "border border-slate-200 bg-white text-slate-800 rounded-tl-sm"
+                      ? "bg-green-700 text-white rounded-tr-sm"
+                      : "border border-green-100 bg-white/90 backdrop-blur-sm text-slate-800 rounded-tl-sm shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)]"
                   }`}
                 >
                   {renderMessageContent(msg)}
@@ -394,20 +391,20 @@ export default function ChatPage() {
       </div>
 
       {/* Input Box */}
-      <div className="border-t border-slate-200 bg-white p-4">
-        <form onSubmit={handleSubmit} className="mx-auto flex max-w-3xl gap-3">
+      <div className="relative z-10 border-t border-green-100 bg-white/90 backdrop-blur-md p-4">
+        <form onSubmit={handleSubmit} className="mx-auto flex max-w-5xl gap-3">
           <input
             type="text"
             value={input}
             disabled={isStreaming}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question, generate an image, or draft a PDF report..."
-            className="flex-1 rounded-full border border-slate-300 bg-slate-50 px-6 py-3 text-sm focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 disabled:opacity-60"
+            placeholder="Ask a question, generate an illustration, or draft a PDF report..."
+            className="flex-1 rounded-full border border-green-200 bg-white px-6 py-3.5 text-sm text-slate-800 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 disabled:opacity-60 shadow-inner"
           />
           <button
             type="submit"
             disabled={isStreaming || !input.trim()}
-            className="flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
+            className="flex items-center justify-center rounded-full bg-green-700 px-8 py-3.5 text-sm font-bold tracking-wide text-white shadow-md hover:bg-green-800 disabled:opacity-50 transition-colors"
           >
             {isStreaming ? "Retrieving..." : "Send"}
           </button>
