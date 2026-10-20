@@ -31,7 +31,7 @@ export default function AdminOverviewPage() {
     const fetchTelemetry = async () => {
       try {
         const token = Cookies.get("access_token");
-        const res = await fetch("http://localhost:8001/api/v1/admin/stats", {
+        const res = await fetch("https://corex-backend-1.onrender.com/api/v1/admin/stats", {
           headers: { Authorization: `Bearer ${token}` }
         });
         
