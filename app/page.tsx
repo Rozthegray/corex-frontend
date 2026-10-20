@@ -17,9 +17,19 @@ import {
 } from 'lucide-react';
 
 // --- ROUTER COMPONENT ---
+// --- ROUTER COMPONENT ---
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.hash || '#/');
+  // 1. Initialize with a safe default for the server build
+  const [currentPath, setCurrentPath] = useState('#/');
 
+  // 2. Read the window object only on the client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentPath(window.location.hash || '#/');
+    }
+  }, []);
+
+  // 3. Keep your existing hash change listener
   useEffect(() => {
     const onHashChange = () => {
       setCurrentPath(window.location.hash || '#/');
@@ -28,6 +38,7 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
+  // ... rest of your component
   const renderRoute = () => {
     switch (currentPath) {
       case '#/dashboard':
