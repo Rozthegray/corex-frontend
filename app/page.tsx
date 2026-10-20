@@ -126,7 +126,7 @@ function LandingPage() {
           <div className="relative aspect-square md:aspect-[4/3] rounded-[2.5rem] bg-gradient-to-tr from-green-50 to-yellow-50 p-4 sm:p-8 shadow-2xl border border-white flex items-center justify-center overflow-visible">
             <div className="absolute inset-0 rounded-[2.5rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.8)]"></div>
             <img 
-              src="White_friendly_robot_standing_2K_20261019171820.jpg" 
+              src="public\White_friendly_robot_standing_2K_20261019171820-removebg-preview.png" 
               alt="Corex AI Friendly Robot Tutor" 
               className="relative z-20 w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 ease-out"
               style={{ filter: 'drop-shadow(0px 20px 40px rgba(0, 135, 81, 0.15))' }}
