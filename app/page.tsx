@@ -14,7 +14,7 @@ import {
    LogOut,
    Sparkles
 } from 'lucide-react';
-import { apiClient } from "@/lib/api-client"; // Added your API Client
+import { apiClient } from "@/lib/api-client";
 
 // --- ROUTER COMPONENT ---
 export default function App() {
@@ -60,12 +60,12 @@ function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100 transition-all duration-300">
+      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.hash = '#/'}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-lg shadow-green-500/20">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center shadow-md">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="text-[30px] font-extrabold tracking-tight text-gray-900">Corex <span className="text-green-600">AI</span></span>
@@ -74,7 +74,7 @@ function LandingPage() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8 font-medium">
             <a href="#/login" className="text-gray-600 hover:text-gray-900 transition-colors text-[10px] font-bold uppercase tracking-wider">Log in</a>
-            <a href="#/signup" className="px-6 py-2.5 rounded-full bg-gray-900 text-white hover:bg-gray-800 transition-colors shadow-md text-[10px] font-bold uppercase tracking-wider">Sign up</a>
+            <a href="#/signup" className="px-8 py-3 rounded-full bg-gray-900 text-white hover:bg-green-700 transition-colors shadow-md text-[10px] font-bold uppercase tracking-wider">Sign up</a>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -86,154 +86,101 @@ function LandingPage() {
         {/* Mobile Nav */}
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-100 shadow-xl p-6 flex flex-col gap-4">
-            <a href="#/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center py-3 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 rounded-xl">Log in</a>
-            <a href="#/signup" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center py-3 text-[10px] font-bold uppercase bg-gray-900 text-white rounded-xl">Sign up</a>
+            <a href="#/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center py-4 text-[10px] font-bold uppercase text-gray-700 hover:bg-gray-50 rounded-xl">Log in</a>
+            <a href="#/signup" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center py-4 text-[10px] font-bold uppercase bg-gray-900 text-white rounded-xl">Sign up</a>
           </div>
         )}
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-8">
+      {/* Minimalist Hero Section */}
+      <section className="relative pt-48 pb-32 px-6 max-w-5xl mx-auto flex flex-col items-center text-center">
         
-        {/* Background Accents */}
-        <div className="absolute top-20 left-[-10%] w-[500px] h-[500px] bg-green-400/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob pointer-events-none"></div>
-        <div className="absolute top-40 right-[-10%] w-[400px] h-[400px] bg-yellow-300/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 pointer-events-none"></div>
+        {/* Soft Background Accents */}
+        <div className="absolute top-20 left-0 w-[400px] h-[400px] bg-green-50 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 animate-blob pointer-events-none"></div>
+        <div className="absolute top-40 right-0 w-[400px] h-[400px] bg-yellow-50 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 animate-blob animation-delay-2000 pointer-events-none"></div>
 
-        <div className="flex-1 space-y-10 z-10 text-center lg:text-left">
-          <h1 className="text-[60px] font-extrabold text-gray-900 leading-[1.1]">
-            Stop losing 40% of your score, <br className="hidden md:block"/>
-            <span className="relative inline-block mt-2">
-              <span className="relative z-10 text-green-600">because you use generic AI.</span>
-              <svg className="absolute w-full h-4 -bottom-1 left-0 text-yellow-400 z-0" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <path d="M0 15 Q 50 25 100 10 L 100 20 L 0 20 Z" fill="currentColor"></path>
-              </svg>
-            </span>
+        <div className="z-10 w-full flex flex-col items-center gap-8">
+          <h1 className="text-[60px] font-extrabold text-gray-900 leading-[1.05] tracking-tight">
+            Stop losing 40% of your grade. <br />
+            <span className="text-green-600">Generic AI is failing you.</span>
           </h1>
           
-          <p className="text-[10px] text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed uppercase tracking-widest">
-            Corex AI turns your departmental archives, past questions, and course materials into an interactive, intelligent tutoring experience tailored specifically to Yabatech.
+          <p className="text-[30px] text-gray-700 leading-snug max-w-4xl">
+            Stop studying with ChatGPT. Start passing with your actual lecturer's PDFs and recommended textbooks.
           </p>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-            <a href="#/dashboard" className="w-full sm:w-auto px-10 py-5 bg-green-600 text-white rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-green-700 transition-all flex items-center justify-center gap-3 shadow-xl shadow-green-600/30 hover:shadow-green-600/40 hover:-translate-y-1 group">
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold max-w-2xl leading-relaxed">
+            Corex AI bypasses generic web answers, generating responses strictly from the exact handouts and departmental materials your lecturers use to set exams.
+          </p>
+          
+          <div className="mt-8">
+            <a href="#/dashboard" className="px-12 py-5 bg-green-600 text-white rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-green-700 transition-all flex items-center justify-center gap-3 shadow-xl shadow-green-600/20 hover:-translate-y-1 group">
               Start Now 
               <ArrowRight className="group-hover:translate-x-1 transition-transform" size={16} />
             </a>
           </div>
         </div>
-
-        <div className="flex-1 w-full max-w-xl lg:max-w-none relative z-10 mt-10 lg:mt-0">
-          <div className="relative aspect-square md:aspect-[4/3] rounded-[2.5rem] bg-gradient-to-tr from-green-50 to-yellow-50 p-4 sm:p-8 shadow-2xl border border-white flex items-center justify-center overflow-visible">
-            <div className="absolute inset-0 rounded-[2.5rem] shadow-[inset_0_0_100px_rgba(255,255,255,0.8)]"></div>
-            <img 
-              src="public\White_friendly_robot_standing_2K_20261019171820-removebg-preview.png" 
-              alt="Corex AI Friendly Robot Tutor" 
-              className="relative z-20 w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700 ease-out"
-              style={{ filter: 'drop-shadow(0px 20px 40px rgba(0, 135, 81, 0.15))' }}
-            />
-          </div>
-        </div>
       </section>
 
-      {/* Who is Corex AI Section */}
+      {/* Minimalist Who is Corex AI Section */}
       <section className="py-32 bg-white relative border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 space-y-32">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-[30px] font-extrabold text-gray-900 tracking-tight mb-4">Who is Corex AI?</h2>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest">Bridging the gap between general knowledge and your specific curriculum.</p>
+        <div className="max-w-6xl mx-auto px-6 space-y-24">
+          
+          <div className="text-center flex flex-col items-center gap-6">
+            <h2 className="text-[60px] font-extrabold text-gray-900 tracking-tight leading-[1.1]">Who is Corex AI?</h2>
+            <p className="text-[30px] text-gray-700 max-w-3xl leading-snug">
+              Your lecturer's brain, fully digitized and ready to tutor.
+            </p>
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold max-w-2xl leading-relaxed">
+              We eliminate the gap between general internet knowledge and the specific syllabus requirements of your institution. Corex AI ensures you never lose marks on technicalities or formatting again.
+            </p>
           </div>
           
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="flex-1 space-y-6">
-              <h3 className="text-[30px] font-bold text-gray-900 leading-[1.2]">A mission to see more students succeed.</h3>
-              <p className="text-[10px] text-gray-600 leading-relaxed">
-                Our primary goal is to see more students go through college successfully. We achieve this by embedding the unique Yabatech orientation directly into our AI. You aren't just getting generic answers; you're getting responses modeled after how your specific lecturers teach and test.
-              </p>
-              <ul className="space-y-4 pt-4">
-                 <li className="flex items-center gap-3 text-[10px] text-gray-700 font-bold"><Bot size={16} className="text-green-600" /> Custom Yabatech AI Models</li>
-                 <li className="flex items-center gap-3 text-[10px] text-gray-700 font-bold"><BookOpen size={16} className="text-yellow-500" /> Syllabus-Aligned Responses</li>
-              </ul>
-            </div>
+          {/* Typographic Feature Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             
-            <div className="flex-1 w-full relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-green-50 rounded-[3rem] transform rotate-3 scale-105"></div>
-              <div className="relative bg-white rounded-[2rem] shadow-2xl border border-gray-100 p-6 flex flex-col gap-6 max-w-md mx-auto">
-                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                    <Bot size={20} />
-                  </div>
-                  <div>
-                    <h4 className="text-[10px] font-bold text-gray-900">Corex Tutor</h4>
-                    <p className="text-[10px] text-gray-500">Online • Ready to help</p>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  <div className="bg-gray-100 rounded-[2rem] rounded-tr-sm p-4 text-[10px] text-gray-800 self-end max-w-[80%] shadow-sm">
-                    Explain the concept of Data Structures as taught in COM 312.
-                  </div>
-                  <div className="bg-green-50 rounded-[2rem] rounded-tl-sm p-4 text-[10px] text-green-900 self-start max-w-[90%] shadow-sm border border-green-100">
-                    Based on the Yabatech COM 312 syllabus, Data Structures involves organizing data in memory... <br/><br/>
-                    <b>Pro tip:</b> Focus on Trees and Graphs, they appeared in 4 out of the last 5 past questions!
-                  </div>
-                </div>
-                
-                <div className="mt-2 flex items-center gap-2 bg-gray-50 rounded-full p-2 border border-gray-200">
-                  <input type="text" placeholder="Ask a question..." className="flex-1 bg-transparent border-none outline-none text-[10px] px-3" />
-                  <button className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white"><ArrowRight size={14}/></button>
-                </div>
+            {/* Feature 1 */}
+            <div className="bg-white border border-gray-200 rounded-[2rem] p-12 shadow-sm relative overflow-hidden group hover:border-green-200 transition-colors">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-green-50 rounded-bl-[100%] z-0 group-hover:scale-110 transition-transform duration-500"></div>
+              
+              <div className="relative z-10 flex flex-col gap-6">
+                <FileText className="text-green-600 w-10 h-10" />
+                <h3 className="text-[30px] font-bold text-gray-900 leading-tight">Lecturer's PDF inside.</h3>
+                <p className="text-[10px] text-gray-600 uppercase tracking-widest font-bold leading-relaxed">
+                  Upload your course materials. Corex AI restricts its knowledge base, extracting only the exact definitions, formulas, and formats your lecturer expects to see on your exam script.
+                </p>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-16">
-            <div className="flex-1 space-y-6">
-              <h3 className="text-[30px] font-bold text-gray-900 leading-[1.2]">Your digital academic archive.</h3>
-              <p className="text-[10px] text-gray-600 leading-relaxed">
-                Stop scrambling for materials days before exams. Corex AI provides a structured, easily accessible archive of your departmental past questions, notes, and handouts, instantly readable by your AI tutor.
-              </p>
-               <ul className="space-y-4 pt-4">
-                 <li className="flex items-center gap-3 text-[10px] text-gray-700 font-bold"><Layers size={16} className="text-gray-900" /> Organized by Course Code</li>
-                 <li className="flex items-center gap-3 text-[10px] text-gray-700 font-bold"><Search size={16} className="text-green-600" /> Instant Search & Retrieval</li>
-              </ul>
-            </div>
-            
-            <div className="flex-1 w-full relative">
-              <div className="absolute inset-0 bg-gradient-to-bl from-yellow-100 to-yellow-50 rounded-[3rem] transform -rotate-3 scale-105"></div>
-              <div className="relative bg-white rounded-[2rem] shadow-2xl border border-gray-100 p-6 flex flex-col gap-4 max-w-md mx-auto">
-                 <h4 className="text-[30px] font-bold text-gray-900 border-b border-gray-100 pb-4">Archives</h4>
-                 
-                 {['COM 312 Past Questions 2025.pdf', 'STA 111 Lecture Notes.docx', 'GNS 201 Summary & Keypoints.pdf'].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-[1rem] hover:bg-green-50 border border-gray-100 transition-colors cursor-pointer group">
-                       <div className="flex items-center gap-3">
-                         <FileText size={20} className="text-gray-400 group-hover:text-green-600" />
-                         <span className="text-[10px] font-bold text-gray-700">{item}</span>
-                       </div>
-                       <span className="text-[10px] text-green-600 bg-green-100 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">Analyzed</span>
-                    </div>
-                 ))}
+            {/* Feature 2 */}
+            <div className="bg-white border border-gray-200 rounded-[2rem] p-12 shadow-sm relative overflow-hidden group hover:border-yellow-200 transition-colors">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-50 rounded-bl-[100%] z-0 group-hover:scale-110 transition-transform duration-500"></div>
+              
+              <div className="relative z-10 flex flex-col gap-6">
+                <BookOpen className="text-yellow-600 w-10 h-10" />
+                <h3 className="text-[30px] font-bold text-gray-900 leading-tight">Stop guessing.</h3>
+                <p className="text-[10px] text-gray-600 uppercase tracking-widest font-bold leading-relaxed">
+                  Practice with AI-generated mock exams modeled directly from your departmental past questions. Get instant feedback on your answers graded strictly against the course marking guide.
+                </p>
               </div>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      {/* Minimalist Footer */}
+      <footer className="bg-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-3">
-            <Bot className="w-6 h-6 text-green-500" />
-            <span className="text-[30px] font-bold text-white">Corex AI</span>
+            <Bot className="w-8 h-8 text-green-500" />
+            <span className="text-[30px] font-extrabold text-white">Corex AI</span>
           </div>
           
-          <div className="flex flex-col md:flex-row items-center gap-6 text-[10px] text-gray-400 uppercase tracking-widest">
+          <div className="flex flex-col md:flex-row items-center gap-8 text-[10px] text-gray-400 uppercase tracking-widest font-bold">
             <a href="https://yabatech.edu.ng" target="_blank" rel="noreferrer" className="hover:text-green-400 transition-colors">yabatech.edu.ng</a>
             <span className="hidden md:inline">•</span>
             <span>Developed by Osemene Chibuzor</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-green-600 hover:text-white transition-colors"></a>
           </div>
         </div>
       </footer>
@@ -323,7 +270,6 @@ function Dashboard() {
 function AuthPage({ type }: { type: 'login' | 'register' }) {
   const isLogin = type === 'login';
   
-  // Dynamic State matching your API Request Structure
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -333,7 +279,6 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Form Submission Logic
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -341,7 +286,6 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
 
     try {
       if (!isLogin) {
-        // Register Flow
         await apiClient.post("/auth/register", { 
           email, 
           password,
@@ -351,7 +295,6 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
         });
         window.location.hash = '#/login';
       } else {
-        // Login Flow 
         await apiClient.post("/auth/login", { email, password });
         window.location.hash = '#/dashboard';
       }
@@ -366,7 +309,6 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 font-sans selection:bg-green-200 selection:text-green-900" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
       <div className="w-full max-w-6xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[700px] border border-gray-200">
         
-        {/* Left Pane - Form */}
         <div className="flex-1 p-10 lg:p-16 flex flex-col justify-center bg-white relative z-10">
            <button onClick={() => window.location.hash = '#/'} className="absolute top-8 left-8 flex items-center gap-2 cursor-pointer text-gray-900 hover:text-green-600 transition-colors">
               <Sparkles className="w-5 h-5 text-green-600" />
@@ -377,7 +319,7 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
             {isLogin ? 'Welcome back' : 'Create an account'}
           </h2>
           <p className="text-[30px] text-gray-500 leading-tight mt-2 mb-10">
-            {isLogin ? 'Log in to continue your session.' : 'Brainstorm in chat, build in cowork.'}
+            {isLogin ? 'Log in to continue your session.' : 'Upload PDFs. Pass exams.'}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -504,7 +446,6 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
           </p>
         </div>
 
-        {/* Right Pane - Visual */}
         <div className="hidden md:flex flex-1 relative bg-[#0a0a0a] overflow-hidden flex-col justify-center p-12 lg:p-20">
           <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay z-10 pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
           <div className="absolute top-[-20%] right-[-20%] w-[120%] h-[120%] bg-gradient-to-bl from-green-500 via-yellow-400 to-transparent rounded-full mix-blend-screen filter blur-[100px] opacity-90 z-0"></div>
@@ -512,7 +453,7 @@ function AuthPage({ type }: { type: 'login' | 'register' }) {
 
           <div className="relative z-20 max-w-md">
             <h2 className="text-[60px] font-extrabold text-white leading-[1.05] tracking-tight drop-shadow-2xl">
-              Think fast, <br /> Build faster.
+              Think fast, <br /> Pass faster.
             </h2>
             <p className="mt-6 text-[30px] text-white/90 leading-tight drop-shadow-lg">
               Join the academic revolution tailored exclusively for Yabatech.
