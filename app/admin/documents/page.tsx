@@ -1,7 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Api } from "@/lib/api-client";
+import { 
+  UploadCloud, 
+  Loader2, 
+  CheckCircle2, 
+  AlertTriangle, 
+  FileQuestion, 
+  Book, 
+  GraduationCap, 
+  FileText 
+} from "lucide-react";
+
+const CATEGORIES = [
+  { id: "syllabus", label: "Syllabus", icon: Book, color: "text-blue-500", bg: "bg-blue-50 border-blue-200" },
+  { id: "past_question", label: "Past Question", icon: FileQuestion, color: "text-amber-500", bg: "bg-amber-50 border-amber-200" },
+  { id: "project_manual", label: "Project Manual", icon: GraduationCap, color: "text-emerald-500", bg: "bg-emerald-50 border-emerald-200" },
+  { id: "lecturer_guide", label: "Lecturer Guide", icon: FileText, color: "text-slate-500", bg: "bg-slate-50 border-slate-200" },
+];
 
 export default function AdminDocumentsPage() {
   const [formData, setFormData] = useState({
@@ -10,16 +27,22 @@ export default function AdminDocumentsPage() {
     lecturer_name: "",
     category: "syllabus",
   });
+  
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [statusMsg, setStatusMsg] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file) {
+      setUploadState("error");
+      setStatusMsg("Please select a document to upload.");
+      return;
+    }
 
-    setUploading(true);
-    setStatus(null);
+    setUploadState("uploading");
+    setStatusMsg("Extracting text and generating Pinecone embeddings...");
 
     const payload = new FormData();
     payload.append("title", formData.title);
@@ -30,107 +53,152 @@ export default function AdminDocumentsPage() {
 
     try {
       const res = await Api.Documents.upload(payload);
-      setStatus({
-        type: "success",
-        message: `Successfully ingested document. Generated ${res.data.pinecone_vectors_created} Pinecone vectors.`,
-      });
+      setUploadState("success");
+      setStatusMsg(`Success! Generated ${res.data.pinecone_vectors_created} vectors. Available in library.`);
       setFormData({ title: "", course_code: "", lecturer_name: "", category: "syllabus" });
       setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err: any) {
-      setStatus({
-        type: "error",
-        message: err.response?.data?.detail || "Failed to process PDF into vector store.",
-      });
-    } finally {
-      setUploading(false);
+      setUploadState("error");
+      setStatusMsg(err.response?.data?.detail || "Failed to process PDF into vector store.");
     }
   };
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="text-2xl font-bold text-slate-900">Ingest Academic Material</h1>
-      <p className="mt-1 text-sm text-slate-600">
-        Upload course PDFs to automatically chunk and embed them into the Pinecone database.
-      </p>
+    <div className="mx-auto max-w-3xl py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-black tracking-tight text-slate-900">Ingest Knowledge</h1>
+        <p className="mt-2 text-slate-600">
+          Upload course materials. Corex will automatically chunk, embed, and categorize them for the student library and RAG agent.
+        </p>
+      </div>
 
-      {status && (
-        <div
-          className={`mt-4 rounded-md p-3 text-sm ${
-            status.type === "success" ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"
-          }`}
-        >
-          {status.message}
+      {uploadState === "success" && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 shadow-sm">
+          <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+          <p className="text-sm font-medium">{statusMsg}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      {uploadState === "error" && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 shadow-sm">
+          <AlertTriangle className="h-6 w-6 text-rose-500" />
+          <p className="text-sm font-medium">{statusMsg}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        
+        {/* Visual Category Selector */}
         <div>
-          <label className="block text-xs font-semibold uppercase text-slate-700">Document Title</label>
-          <input
-            type="text"
-            required
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="e.g. Laboratory Manual for CTE 411"
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
-          />
+          <label className="mb-3 block text-sm font-bold text-slate-900">1. Document Evaluation Type</label>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isSelected = formData.category === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, category: cat.id })}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 p-4 transition-all ${
+                    isSelected 
+                      ? `${cat.bg} ring-2 ring-emerald-500 ring-offset-2` 
+                      : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50 text-slate-500"
+                  }`}
+                >
+                  <Icon className={`h-8 w-8 ${isSelected ? cat.color : "text-slate-400"}`} />
+                  <span className={`text-xs font-semibold ${isSelected ? "text-slate-900" : "text-slate-500"}`}>
+                    {cat.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        {/* Metadata Fields */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-bold text-slate-900">2. Document Title</label>
+            <input
+              type="text"
+              required
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g. 2023 Hardware Architecture Final"
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+            />
+          </div>
+
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-700">Course Code</label>
+            <label className="block text-sm font-bold text-slate-900">Course Code</label>
             <input
               type="text"
               required
               value={formData.course_code}
-              onChange={(e) => setFormData({ ...formData, course_code: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, course_code: e.target.value.toUpperCase() })}
               placeholder="e.g. CTE 411"
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium uppercase focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
             />
           </div>
+
           <div>
-            <label className="block text-xs font-semibold uppercase text-slate-700">Lecturer / Supervisor</label>
+            <label className="block text-sm font-bold text-slate-900">Lecturer Name <span className="text-slate-400 font-normal">(Optional)</span></label>
             <input
               type="text"
               value={formData.lecturer_name}
               onChange={(e) => setFormData({ ...formData, lecturer_name: e.target.value })}
-              placeholder="e.g. Engr. Bello"
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
+              placeholder="e.g. Dr. Osemene"
+              className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
             />
           </div>
         </div>
 
+        {/* File Upload Area */}
         <div>
-          <label className="block text-xs font-semibold uppercase text-slate-700">Document Category</label>
-          <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
+          <label className="block text-sm font-bold text-slate-900">3. Source File</label>
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className={`mt-2 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 transition-colors ${
+              file ? "border-emerald-500 bg-emerald-50" : "border-slate-300 bg-slate-50 hover:border-amber-400 hover:bg-amber-50"
+            }`}
           >
-            <option value="syllabus">Syllabus</option>
-            <option value="project_manual">Project Manual</option>
-            <option value="lecturer_guide">Lecturer Guide</option>
-            <option value="past_question">Past Question</option>
-          </select>
+            <UploadCloud className={`h-10 w-10 ${file ? "text-emerald-500" : "text-slate-400"}`} />
+            <p className="mt-4 text-sm font-medium text-slate-900">
+              {file ? file.name : "Click to browse PDF or Image files"}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : "Supports .pdf, .png, .jpg up to 50MB"}
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              className="hidden"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-xs font-semibold uppercase text-slate-700">Source PDF File</label>
-          <input
-            type="file"
-            accept=".pdf,.png,.jpg,.jpeg"
-            required
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="mt-1 w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800"
-          />
-        </div>
-
+        {/* Submit Button */}
         <button
           type="submit"
-          disabled={uploading}
-          className="mt-2 w-full rounded-md bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          disabled={uploadState === "uploading"}
+          className={`relative flex w-full items-center justify-center rounded-xl py-4 text-base font-bold text-white transition-all ${
+            uploadState === "uploading" 
+              ? "bg-amber-500 cursor-not-allowed" 
+              : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-200"
+          }`}
         >
-          {uploading ? "Parsing & Generating Vector Embeddings..." : "Upload & Vectorize"}
+          {uploadState === "uploading" ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              {statusMsg}
+            </>
+          ) : (
+            "Vectorize & Archive Document"
+          )}
         </button>
       </form>
     </div>
