@@ -1,17 +1,19 @@
+"use client"; // Add this line at the top
+
 import React, { useState, useEffect } from 'react';
 import { 
-  ArrowRight, 
-  BookOpen, 
-  Bot, 
-  Layers, 
-  Menu, 
-  X, 
-  Search, 
-  MessageSquare, 
-  FileText, 
-  LogOut,
-  Sparkles,
-  Instagram
+   ArrowRight, 
+   BookOpen,
+   Bot,
+   Layers,
+   Menu,
+   X,
+   Search,
+   MessageSquare,
+   FileText,
+   LogOut,
+   Sparkles
+   // Instagram removed
 } from 'lucide-react';
 
 // --- ROUTER COMPONENT ---
@@ -33,7 +35,8 @@ export default function App() {
       case '#/login':
         return <AuthPage type="login" />;
       case '#/signup':
-        return <AuthPage type="signup" />;
+      case '#/signup':
+      return <AuthPage type="register" />;
       case '#/':
       default:
         return <LandingPage />;
@@ -232,7 +235,7 @@ function LandingPage() {
 
           <div className="flex items-center gap-4">
             <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-green-600 hover:text-white transition-colors">
-              <Instagram size={18} />
+             
             </a>
           </div>
         </div>
@@ -324,8 +327,9 @@ function Dashboard() {
 }
 
 // --- AUTH PAGES (LOGIN / SIGNUP) ---
-function AuthPage({ type }) {
-  const isLogin = type === 'login';
+function AuthPage({ type }: { type: 'login' | 'register' }) {
+    const isLogin = type === 'login';
+    // ...
   
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-gray-100 font-sans selection:bg-green-200 selection:text-green-900" style={{ fontFamily: "'Times New Roman', Times, serif" }}>

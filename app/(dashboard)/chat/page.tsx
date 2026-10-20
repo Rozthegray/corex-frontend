@@ -82,7 +82,7 @@ export default function ChatPage() {
   const generateImageFromPrompt = async (messageId: string, imagePrompt: string) => {
     try {
       const token = Cookies.get("access_token");
-      const res = await fetch("http://localhost:8001/api/v1/chat/image", {
+      const res = await fetch("https://corex-backend-1.onrender.com/api/v1/chat/image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export default function ChatPage() {
         .replace(/\[TRIGGER_PDF_GENERATION\]/g, "")
         .trim();
 
-      const res = await fetch("http://localhost:8001/api/v1/chat/pdf", {
+      const res = await fetch("https://corex-backend-1.onrender.com/api/v1/chat/pdf", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -164,7 +164,7 @@ export default function ChatPage() {
 
     try {
       const token = Cookies.get("access_token");
-      const res = await fetch("http://localhost:8001/api/v1/chat/stream", {
+      const res = await fetch("https://corex-backend-1.onrender.com/api/v1/chat/stream", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

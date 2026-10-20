@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // Prioritize the .env.local variable to kill cache, but safely fallback to IPv4
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://corex-backend-1.onrender.com/";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
