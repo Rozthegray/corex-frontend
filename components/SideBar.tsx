@@ -84,7 +84,7 @@ export default function Sidebar({ onCloseMobile }: { onCloseMobile?: () => void 
             <MessageSquare className={iconClass("/chat")} /> Academic RAG
           </Link>
           <Link href="/dashboard/history" className={linkClass("/dashboard/history")} onClick={handleNavClick}>
-            <History className={iconClass("/dashboard/history")} /> Chat History
+            <History className={iconClass("/history")} /> Chat History
           </Link>
 
           {/* Conditional Admin Routing */}
