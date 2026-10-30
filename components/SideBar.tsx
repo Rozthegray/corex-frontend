@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/auth-store";
-import { PlusCircle, MessageSquare, LayoutDashboard, History, Settings, Users, Database } from "lucide-react";
+import { PlusCircle, MessageSquare, History, Settings, Users, Database, Sparkles, X } from "lucide-react";
 
-export default function Sidebar() {
+// Add props to allow the layout to close the sidebar on mobile
+export default function Sidebar({ onCloseMobile }: { onCloseMobile?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, clearAuth } = useAuthStore();
@@ -18,26 +19,48 @@ export default function Sidebar() {
   const isAdmin = user?.role === "president" || user?.role === "superadmin";
 
   const linkClass = (path: string) =>
-    `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+    `flex items-center gap-3 rounded-xl px-4 py-3 text-[10px] font-bold uppercase tracking-wider transition-all ${
       pathname === path
-        ? "bg-slate-900 text-white"
-        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+        ? "bg-green-700 text-white shadow-md shadow-green-700/20"
+        : "text-gray-600 hover:bg-green-50 hover:text-green-900"
     }`;
 
-  // This forces a hard refresh on the chat route to clear state and start a new session
+  const iconClass = (path: string) => 
+    `h-4 w-4 transition-colors ${
+      pathname === path ? "text-green-200" : "text-gray-400"
+    }`;
+
   const handleNewChat = () => {
     if (pathname === "/chat") {
       window.location.reload(); 
     } else {
       router.push("/chat");
     }
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const handleNavClick = () => {
+    if (onCloseMobile) onCloseMobile();
   };
 
   return (
-    <aside className="flex w-64 flex-col justify-between border-r border-slate-200 bg-white shadow-sm">
+    <aside className="flex w-64 h-full flex-col justify-between border-r border-green-100 bg-white/80 backdrop-blur-md shadow-sm" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
       <div>
-        <div className="flex h-16 items-center justify-between border-b border-slate-100 px-6">
-          <span className="text-xl font-bold tracking-tight text-slate-900">Corex.AI</span>
+        <div className="flex h-20 items-center justify-between border-b border-green-50 px-6">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer" onClick={handleNavClick}>
+            <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center shadow-md">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-[20px] font-extrabold text-gray-900 tracking-tight">Corex <span className="text-green-600">AI</span></span>
+          </Link>
+          
+          {/* Close button for mobile inside the sidebar */}
+          <button 
+            className="md:hidden text-gray-500 hover:text-gray-900" 
+            onClick={onCloseMobile}
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <nav className="flex flex-col gap-1 px-4 py-6">
@@ -45,39 +68,39 @@ export default function Sidebar() {
           {/* Prominent New Chat Button */}
           <button 
             onClick={handleNewChat}
-            className="mb-4 flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 shadow-sm"
+            className="mb-6 flex items-center justify-center gap-2 rounded-full bg-gray-900 px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-green-700 shadow-md group"
           >
-            <PlusCircle size={18} />
+            <PlusCircle size={16} className="text-gray-400 group-hover:text-green-200 transition-colors" />
             New Chat Session
           </button>
 
-          <div className="mb-2 mt-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-2 mt-2 px-3 text-[10px] font-bold uppercase tracking-widest text-green-700">
             Student Workspace
           </div>
-          <Link href="/dashboard" className={linkClass("/dashboard")}>
-            <LayoutDashboard size={18} /> Dashboard Overview
+          
+          {/* Dashboard Overview Removed for Users */}
+          
+          <Link href="/chat" className={linkClass("/chat")} onClick={handleNavClick}>
+            <MessageSquare className={iconClass("/chat")} /> Academic RAG
           </Link>
-          <Link href="/chat" className={linkClass("/chat")}>
-            <MessageSquare size={18} /> Academic RAG Assistant
-          </Link>
-          <Link href="/dashboard/history" className={linkClass("/dashboard/history")}>
-            <History size={18} /> Chat History & Export
+          <Link href="/dashboard/history" className={linkClass("/dashboard/history")} onClick={handleNavClick}>
+            <History className={iconClass("/dashboard/history")} /> Chat History
           </Link>
 
           {/* Conditional Admin Routing */}
           {isAdmin && (
             <>
-              <div className="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <div className="mb-2 mt-8 px-3 text-[10px] font-bold uppercase tracking-widest text-green-700">
                 Admin Control
               </div>
-              <Link href="/dashboard/admin/ingest" className={linkClass("/dashboard/admin/ingest")}>
-                <Database size={18} /> Knowledge Ingestion
+              <Link href="/dashboard/admin/ingest" className={linkClass("/dashboard/admin/ingest")} onClick={handleNavClick}>
+                <Database className={iconClass("/dashboard/admin/ingest")} /> Ingestion
               </Link>
-              <Link href="/dashboard/admin/users" className={linkClass("/dashboard/admin/users")}>
-                <Users size={18} /> User Management
+              <Link href="/dashboard/admin/users" className={linkClass("/dashboard/admin/users")} onClick={handleNavClick}>
+                <Users className={iconClass("/dashboard/admin/users")} /> Users
               </Link>
-              <Link href="/dashboard/admin/ledger" className={linkClass("/dashboard/admin/ledger")}>
-                <Settings size={18} /> System Ledger
+              <Link href="/dashboard/admin/ledger" className={linkClass("/dashboard/admin/ledger")} onClick={handleNavClick}>
+                <Settings className={iconClass("/dashboard/admin/ledger")} /> System Ledger
               </Link>
             </>
           )}
@@ -85,22 +108,22 @@ export default function Sidebar() {
       </div>
 
       {/* User Profile & Logout */}
-      <div className="border-t border-slate-200 p-4 bg-slate-50">
-        <div className="mb-4 flex flex-col gap-1">
-          <span className="text-sm font-bold text-slate-900 truncate">
+      <div className="border-t border-green-100 p-6 bg-white/50">
+        <div className="mb-6 flex flex-col gap-1">
+          <span className="text-[12px] font-bold text-gray-900 truncate uppercase tracking-wider">
             {user?.full_name || "Student User"}
           </span>
-          <span className="text-xs font-medium text-slate-500 truncate">
+          <span className="text-[10px] font-bold text-gray-500 truncate uppercase tracking-widest">
             {user?.level} • {user?.pathway}
           </span>
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-              user?.account_type === 'pro' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200 text-slate-700'
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center rounded-full px-2 py-1 text-[8px] font-bold uppercase tracking-widest ${
+              user?.account_type === 'pro' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-gray-100 text-gray-600 border border-gray-200'
             }`}>
               {user?.account_type || "Free"}
             </span>
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-              isAdmin ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+            <span className={`inline-flex items-center rounded-full px-2 py-1 text-[8px] font-bold uppercase tracking-widest ${
+              isAdmin ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-green-100 text-green-800 border border-green-200'
             }`}>
               {user?.role || "Student"}
             </span>
@@ -108,11 +131,11 @@ export default function Sidebar() {
         </div>
         <button
           onClick={handleLogout}
-          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100 transition-colors"
+          className="w-full rounded-full border border-gray-200 bg-white px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider text-gray-700 shadow-sm hover:bg-red-50 hover:text-red-700 hover:border-red-100 transition-colors"
         >
           Sign Out
         </button>
       </div>
     </aside>
   );
-}
+      }
