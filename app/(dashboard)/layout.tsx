@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/auth-store";
 import Sidebar from "@/components/SideBar";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Menu } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, token } = useAuthStore();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  
+  // State to manage mobile sidebar visibility
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -48,11 +51,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[50%] rounded-full bg-yellow-100/30 blur-[120px]" />
       </div>
 
-      <div className="relative z-20">
-        <Sidebar />
+      {/* Mobile Header (Visible only on small screens) */}
+      <div className="md:hidden absolute top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b border-green-100 z-30 flex items-center px-4">
+        <button 
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="p-2 text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+        >
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Collapsible on Mobile */}
+      <div 
+        className={`fixed md:relative inset-y-0 left-0 z-50 transform ${
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 transition-transform duration-300 ease-in-out`}
+      >
+        <Sidebar onCloseMobile={() => setIsMobileSidebarOpen(false)} />
       </div>
       
-      <main className="relative z-10 flex-1 overflow-y-auto w-full bg-white/40 backdrop-blur-3xl">
+      {/* Main Content Area - Add top padding on mobile to account for the header */}
+      <main className="relative z-10 flex-1 overflow-y-auto w-full bg-white/40 backdrop-blur-3xl pt-16 md:pt-0">
         {children}
       </main>
     </div>
