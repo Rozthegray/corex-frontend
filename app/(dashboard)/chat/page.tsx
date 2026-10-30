@@ -482,14 +482,21 @@ export default function ChatPage() {
               className="flex-1 rounded-full border border-green-200 bg-white px-4 md:px-6 py-3 md:py-3.5 text-[14px] text-gray-800 focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 disabled:opacity-60 shadow-inner"
             />
 <button
-  type="submit"
-  disabled={isStreaming || !input.trim()}
-  className="flex items-center justify-center rounded-full bg-green-700 px-6 md:px-8 py-3 md:py-3.5 text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-white shadow-md hover:bg-green-800 disabled:opacity-50 transition-colors"
->
-  {isStreaming ? (
-     <Loader2 size={18} className="animate-spin" />
-  ) : (
-     <span className="hidden sm:inline">Send</span>
-  )}
-  <span className="sm:hidden">→</span>
-</button>
+              type="submit"
+              disabled={isStreaming || !input.trim()}
+              className="flex items-center justify-center rounded-full bg-green-700 px-6 md:px-8 py-3 md:py-3.5 text-[10px] md:text-[12px] font-bold uppercase tracking-widest text-white shadow-md hover:bg-green-800 disabled:opacity-50 transition-colors"
+            >
+              {isStreaming ? (
+                 <Loader2 size={18} className="animate-spin" />
+              ) : (
+                 <span className="hidden sm:inline">Send</span>
+              )}
+              <span className="sm:hidden">→</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  );
+}
